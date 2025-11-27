@@ -613,6 +613,127 @@
         });
     }
 
+    // --- INVESTOR ACTIONS ---
+
+    // [UPDATED] Fixed: Approve EXACT amount, not 1 Billion
+    async function approveUSDC() {
+        try {
+            const val = document.getElementById("depositAmount").value;
+            if(!val || val <= 0) {
+                alert("Please enter a valid deposit amount first.");
+                return;
+            }
+            
+            const amount = ethers.parseUnits(val, usdcDecimals); // Use exact amount
+            const tx = await usdcContract.approve(VAULT_ADDRESS, amount);
+            await tx.wait();
+            alert(`Approved ${val} USDC for Vault!`);
+        } catch (e) { alert("Approval failed: " + e.message); }
+    }
+
+    async function deposit() {
+        try {
+            const val = document.getElementById("depositAmount").value;
+            const amount = ethers.parseUnits(val, usdcDecimals);
+            // Slippage: Passing 0 for minShares in demo. In prod, calculate e.g. 99% of expected.
+            const tx = await vaultContract.deposit(amount, 0); 
+            await tx.wait();
+            alert("Deposit Successful!");
+            refreshData();
+        } catch (e) { alert("Deposit failed (Are you whitelisted?): " + e.message); }
+    }
+
+    async function withdraw() {
+        try {
+            const val = document.getElementById("withdrawAmount").value;
+            const shares = ethers.parseUnits(val, usdcDecimals);
+            const tx = await vaultContract.withdraw(shares, 0);
+            await tx.wait();
+            alert("Withdrawal Successful!");
+            refreshData();
+        } catch (e) { alert("Withdraw failed (Lockup active?): " + e.message); }
+    }
+
+    // --- ADMIN ACTIONS ---
+
+    async function whitelistInvestor() {
+        try {
+            const addr = document.getElementById("whitelistAddress").value;
+            const tx = await vaultContract.setInvestorStatus(addr, true);
+            await tx.wait();
+            alert("Investor Whitelisted!");
+        } catch (e) { alert("Action failed: " + e.message); }
+    }
+
+    async function deployCapital() {
+        try {
+            const solver = document.getElementById("loanSolver").value;
+            const val = document.getElementById("loanAmount").value;
+            const amount = ethers.parseUnits(val, usdcDecimals);
+            const tx = await kernelContract.deployCapital(solver, amount);
+            await tx.wait();
+            alert("Capital Deployed to Solver!");
+            refreshData();
+        } catch (e) { alert("Deploy failed: " + e.message); }
+    }
+
+    async function whitelistSolver() {
+        try {
+            const addr = document.getElementById("solverWhitelistAddr").value;
+            const tx = await kernelContract.setSolver(addr, true);
+            await tx.wait();
+            alert("Solver Whitelisted in Kernel!");
+        } catch (e) { alert("Action failed: " + e.message); }
+    }
+
+    async function setTreasury() {
+        try {
+            const addr = document.getElementById("treasuryAddr").value;
+            const tx = await kernelContract.setTreasury(addr);
+            await tx.wait();
+            alert("Treasury Updated!");
+        } catch (e) { alert("Action failed: " + e.message); }
+    }
+
+    // --- SOLVER ACTIONS ---
+
+    // [UPDATED] Fixed: Approve EXACT Repayment amount (Principal + Fee)
+    async function approveKernelUSDC() {
+        try {
+            const pVal = document.getElementById("repayPrincipal").value;
+            const fVal = document.getElementById("repayFee").value;
+            
+            if(!pVal) {
+                alert("Please enter Repayment amounts first.");
+                return;
+            }
+
+            // Calculate Total = Principal + Fee
+            const principal = ethers.parseUnits(pVal, usdcDecimals);
+            const fee = ethers.parseUnits(fVal || "0", usdcDecimals);
+            const total = principal + fee;
+
+            const tx = await usdcContract.approve(KERNEL_ADDRESS, total);
+            await tx.wait();
+            alert(`Approved ${ethers.formatUnits(total, usdcDecimals)} USDC for Kernel!`);
+        } catch (e) { alert("Approval failed: " + e.message); }
+    }
+
+    async function repayLoan() {
+        try {
+            const pVal = document.getElementById("repayPrincipal").value;
+            const fVal = document.getElementById("repayFee").value;
+            const principal = ethers.parseUnits(pVal, usdcDecimals);
+            const fee = ethers.parseUnits(fVal, usdcDecimals);
+            
+            const tx = await kernelContract.repayLoan(principal, fee);
+            await tx.wait();
+            alert("Loan Repaid!");
+            refreshData();
+        } catch (e) { alert("Repay failed: " + e.message); }
+    }
+
+    // --- ABIs & SETUP ---
     // ABIs (Simplified for Frontend interaction)
     const ERC20_ABI = [
         "function approve(address spender, uint256 amount) external returns (bool)",
@@ -699,106 +820,6 @@
         } catch(e) {
             console.error("Error fetching data", e);
         }
-    }
-
-    // --- INVESTOR ACTIONS ---
-
-    async function approveUSDC() {
-        try {
-            const amount = ethers.parseUnits("1000000000", usdcDecimals); // Approve large amount
-            const tx = await usdcContract.approve(VAULT_ADDRESS, amount);
-            await tx.wait();
-            alert("USDC Approved for Vault!");
-        } catch (e) { alert("Approval failed: " + e.message); }
-    }
-
-    async function deposit() {
-        try {
-            const val = document.getElementById("depositAmount").value;
-            const amount = ethers.parseUnits(val, usdcDecimals);
-            // Slippage: Passing 0 for minShares in demo. In prod, calculate e.g. 99% of expected.
-            const tx = await vaultContract.deposit(amount, 0); 
-            await tx.wait();
-            alert("Deposit Successful!");
-            refreshData();
-        } catch (e) { alert("Deposit failed (Are you whitelisted?): " + e.message); }
-    }
-
-    async function withdraw() {
-        try {
-            const val = document.getElementById("withdrawAmount").value;
-            const shares = ethers.parseUnits(val, usdcDecimals);
-            const tx = await vaultContract.withdraw(shares, 0);
-            await tx.wait();
-            alert("Withdrawal Successful!");
-            refreshData();
-        } catch (e) { alert("Withdraw failed (Lockup active?): " + e.message); }
-    }
-
-    // --- ADMIN ACTIONS ---
-
-    async function whitelistInvestor() {
-        try {
-            const addr = document.getElementById("whitelistAddress").value;
-            const tx = await vaultContract.setInvestorStatus(addr, true);
-            await tx.wait();
-            alert("Investor Whitelisted!");
-        } catch (e) { alert("Action failed: " + e.message); }
-    }
-
-    async function deployCapital() {
-        try {
-            const solver = document.getElementById("loanSolver").value;
-            const val = document.getElementById("loanAmount").value;
-            const amount = ethers.parseUnits(val, usdcDecimals);
-            const tx = await kernelContract.deployCapital(solver, amount);
-            await tx.wait();
-            alert("Capital Deployed to Solver!");
-            refreshData();
-        } catch (e) { alert("Deploy failed: " + e.message); }
-    }
-
-    async function whitelistSolver() {
-        try {
-            const addr = document.getElementById("solverWhitelistAddr").value;
-            const tx = await kernelContract.setSolver(addr, true);
-            await tx.wait();
-            alert("Solver Whitelisted in Kernel!");
-        } catch (e) { alert("Action failed: " + e.message); }
-    }
-
-    async function setTreasury() {
-        try {
-            const addr = document.getElementById("treasuryAddr").value;
-            const tx = await kernelContract.setTreasury(addr);
-            await tx.wait();
-            alert("Treasury Updated!");
-        } catch (e) { alert("Action failed: " + e.message); }
-    }
-
-    // --- SOLVER ACTIONS ---
-
-    async function approveKernelUSDC() {
-        try {
-            const amount = ethers.parseUnits("1000000000", usdcDecimals);
-            const tx = await usdcContract.approve(KERNEL_ADDRESS, amount);
-            await tx.wait();
-            alert("USDC Approved for Kernel!");
-        } catch (e) { alert("Approval failed: " + e.message); }
-    }
-
-    async function repayLoan() {
-        try {
-            const pVal = document.getElementById("repayPrincipal").value;
-            const fVal = document.getElementById("repayFee").value;
-            const principal = ethers.parseUnits(pVal, usdcDecimals);
-            const fee = ethers.parseUnits(fVal, usdcDecimals);
-            
-            const tx = await kernelContract.repayLoan(principal, fee);
-            await tx.wait();
-            alert("Loan Repaid!");
-            refreshData();
-        } catch (e) { alert("Repay failed: " + e.message); }
     }
 
 </script>
