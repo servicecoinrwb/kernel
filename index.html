@@ -25,30 +25,89 @@
         label { color: #e2e8f0; font-weight: 500; }
         
         /* Buttons */
-        .btn-primary { background-color: #3b82f6; border: none; padding: 10px 20px; font-weight: 600; }
-        .btn-primary:hover { background-color: #2563eb; }
-        .btn-success { background-color: #10b981; border: none; }
-        .btn-danger { background-color: #ef4444; border: none; }
-        .btn-outline-light:hover { color: #0f172a; }
+        .btn-primary { 
+            background-color: #3b82f6; 
+            border: none; 
+            padding: 10px 20px; 
+            font-weight: 600; 
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover { 
+            background-color: #2563eb; 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        .btn-success { background-color: #10b981; border: none; transition: transform 0.2s; }
+        .btn-success:hover { transform: translateY(-2px); }
+        .btn-danger { background-color: #ef4444; border: none; transition: transform 0.2s; }
+        .btn-danger:hover { transform: translateY(-2px); }
+        .btn-outline-light:hover { color: #0f172a; background-color: white; }
 
         /* Input Fields */
-        .form-control { background-color: #0f172a; border: 1px solid #334155; color: white; }
+        .form-control { background-color: #0f172a; border: 1px solid #334155; color: white; transition: border-color 0.3s, box-shadow 0.3s; }
         .form-control:focus { background-color: #0f172a; color: white; border-color: #3b82f6; box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25); }
         .form-control::placeholder { color: #64748b; } 
 
         /* Tabs */
         .nav-tabs { border-bottom: 1px solid #334155; }
-        .nav-tabs .nav-link { color: #94a3b8; }
-        .nav-tabs .nav-link:hover { border-color: #334155; isolation: isolate; }
+        .nav-tabs .nav-link { color: #94a3b8; transition: all 0.3s ease; }
+        .nav-tabs .nav-link:hover { border-color: #334155; color: #cbd5e1; }
         .nav-tabs .nav-link.active { background-color: #1e293b; color: #3b82f6; border-color: #334155 #334155 #1e293b; }
         
         /* Landing Page Specific Styles */
         .hero-section { padding: 100px 0; text-align: center; background: radial-gradient(circle at top, #1e293b 0%, #0f172a 70%); }
         .feature-icon { font-size: 2.5rem; margin-bottom: 1rem; color: #3b82f6; }
         .step-number { background: #3b82f6; color: white; width: 40px; height: 40px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; margin-bottom: 15px; }
-        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
         
-        #dashboard-view { display: none; } /* Hidden by default */
+        .glass-card { 
+            background: rgba(30, 41, 59, 0.7); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        
+        .glass-card:hover, .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+        }
+        
+        #dashboard-view { display: none; opacity: 0; transition: opacity 0.5s ease-in-out; } 
+        #landing-view { transition: opacity 0.5s ease-in-out; }
+
+        /* --- ANIMATIONS --- */
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translate3d(0, 40px, 0);
+            }
+            to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+
+        .animate-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0; /* Start hidden for animation */
+        }
+
+        .pulse-btn {
+            animation: pulse-glow 2s infinite;
+        }
+
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-500 { animation-delay: 0.5s; }
+
     </style>
 </head>
 <body>
@@ -56,7 +115,7 @@
 <!-- LANDING PAGE VIEW -->
 <div id="landing-view">
     <!-- Navbar -->
-    <nav class="navbar navbar-dark bg-transparent pt-4">
+    <nav class="navbar navbar-dark bg-transparent pt-4 animate-up">
         <div class="container">
             <a class="navbar-brand fw-bold fs-3" href="#">Kernel <span class="text-primary">System</span></a>
             <button class="btn btn-outline-light" onclick="enterApp()">Launch App</button>
@@ -66,13 +125,13 @@
     <!-- Hero Section -->
     <section class="hero-section">
         <div class="container">
-            <h1 class="display-3 fw-bold mb-4">Bridging On-Chain Liquidity<br>to Real World Yield</h1>
-            <p class="lead text-muted mb-5 mx-auto" style="max-width: 700px;">
+            <h1 class="display-3 fw-bold mb-4 animate-up delay-100">Bridging On-Chain Liquidity<br>to Real World Yield</h1>
+            <p class="lead text-muted mb-5 mx-auto animate-up delay-200" style="max-width: 700px;">
                 A secure, compliant, and transparent private credit protocol. 
                 Deposit USDC, fund whitelisted borrowers, and earn institutional-grade yields.
             </p>
-            <div class="d-flex justify-content-center gap-3">
-                <button class="btn btn-primary btn-lg px-5" onclick="enterApp()">Enter Dashboard <i class="fas fa-arrow-right ms-2"></i></button>
+            <div class="d-flex justify-content-center gap-3 animate-up delay-300">
+                <button class="btn btn-primary btn-lg px-5 pulse-btn" onclick="enterApp()">Enter Dashboard <i class="fas fa-arrow-right ms-2"></i></button>
                 <a href="#get-whitelisted" class="btn btn-outline-secondary btn-lg px-5 text-white">Join Whitelist</a>
             </div>
         </div>
@@ -81,19 +140,19 @@
     <!-- Stats Banner -->
     <div class="container mb-5">
         <div class="row g-4 justify-content-center">
-            <div class="col-md-3">
+            <div class="col-md-3 animate-up delay-300">
                 <div class="p-4 rounded glass-card text-center">
                     <h2 class="text-primary fw-bold">$2.4M+</h2>
                     <p class="text-muted mb-0">Total Value Locked</p>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 animate-up delay-400">
                 <div class="p-4 rounded glass-card text-center">
                     <h2 class="text-success fw-bold">12.5%</h2>
                     <p class="text-muted mb-0">Average APY</p>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 animate-up delay-500">
                 <div class="p-4 rounded glass-card text-center">
                     <h2 class="text-info fw-bold">0%</h2>
                     <p class="text-muted mb-0">Default Rate</p>
@@ -212,31 +271,31 @@
 
 <!-- DASHBOARD VIEW (Hidden Initially) -->
 <div id="dashboard-view" class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 animate-up">
         <div>
             <button class="btn btn-sm btn-outline-secondary mb-2" onclick="exitApp()"><i class="fas fa-arrow-left"></i> Back to Home</button>
             <h2>Kernel <span class="text-primary">System V1</span></h2>
         </div>
         <div>
             <span id="walletAddress" class="me-2 text-white">Not Connected</span>
-            <button id="connectBtn" class="btn btn-primary" onclick="connectWallet()">Connect Wallet</button>
+            <button id="connectBtn" class="btn btn-primary pulse-btn" onclick="connectWallet()">Connect Wallet</button>
         </div>
     </div>
 
     <div class="row mb-4">
-        <div class="col-md-4">
+        <div class="col-md-4 animate-up delay-100">
             <div class="card p-3 text-center">
                 <small class="text-muted">Total Managed Assets (USDC)</small>
                 <h3 id="totalAssets">0.00</h3>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 animate-up delay-200">
             <div class="card p-3 text-center">
                 <small class="text-muted">Total Shares Minted</small>
                 <h3 id="totalShares">0.00</h3>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 animate-up delay-300">
             <div class="card p-3 text-center">
                 <small class="text-muted">Your Share Balance</small>
                 <h3 id="userShares">0.00</h3>
@@ -244,135 +303,137 @@
         </div>
     </div>
 
-    <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
-        <li class="nav-item">
-            <button class="nav-link active" id="investor-tab" data-bs-toggle="tab" data-bs-target="#investor" type="button">Investor Zone</button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin" type="button">Admin Control</button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link" id="solver-tab" data-bs-toggle="tab" data-bs-target="#solver" type="button">Solver Interface</button>
-        </li>
-    </ul>
+    <div class="animate-up delay-400">
+        <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" id="investor-tab" data-bs-toggle="tab" data-bs-target="#investor" type="button">Investor Zone</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin" type="button">Admin Control</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="solver-tab" data-bs-toggle="tab" data-bs-target="#solver" type="button">Solver Interface</button>
+            </li>
+        </ul>
 
-    <div class="tab-content" id="myTabContent">
-        
-        <div class="tab-pane fade show active" id="investor">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">Deposit USDC</div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label>Amount (USDC)</label>
-                                <input type="number" id="depositAmount" class="form-control" placeholder="1000">
+        <div class="tab-content" id="myTabContent">
+            
+            <div class="tab-pane fade show active" id="investor">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">Deposit USDC</div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label>Amount (USDC)</label>
+                                    <input type="number" id="depositAmount" class="form-control" placeholder="1000">
+                                </div>
+                                <button class="btn btn-warning w-100 mb-2" onclick="approveUSDC()">1. Approve USDC</button>
+                                <button class="btn btn-success w-100" onclick="deposit()">2. Deposit Funds</button>
+                                <small class="text-muted d-block mt-2">*Requires Whitelist</small>
                             </div>
-                            <button class="btn btn-warning w-100 mb-2" onclick="approveUSDC()">1. Approve USDC</button>
-                            <button class="btn btn-success w-100" onclick="deposit()">2. Deposit Funds</button>
-                            <small class="text-muted d-block mt-2">*Requires Whitelist</small>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">Withdraw USDC</div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label>Share Amount to Burn</label>
-                                <input type="number" id="withdrawAmount" class="form-control" placeholder="500">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">Withdraw USDC</div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label>Share Amount to Burn</label>
+                                    <input type="number" id="withdrawAmount" class="form-control" placeholder="500">
+                                </div>
+                                <button class="btn btn-danger w-100" onclick="withdraw()">Withdraw Funds</button>
+                                <small class="text-muted d-block mt-2">*Subject to 24h Lockup</small>
                             </div>
-                            <button class="btn btn-danger w-100" onclick="withdraw()">Withdraw Funds</button>
-                            <small class="text-muted d-block mt-2">*Subject to 24h Lockup</small>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="tab-pane fade" id="admin">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">Vault Access Control</div>
-                        <div class="card-body">
-                            <label class="mb-2">Whitelist Investor Address</label>
-                            <div class="input-group mb-3">
-                                <input type="text" id="whitelistAddress" class="form-control" placeholder="0x...">
-                                <button class="btn btn-primary" onclick="whitelistInvestor()">Whitelist</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">Kernel Lending (Deploy Capital)</div>
-                        <div class="card-body">
-                            <div class="mb-2">
-                                <label>Solver Address</label>
-                                <input type="text" id="loanSolver" class="form-control" placeholder="0x...">
-                            </div>
-                            <div class="mb-3">
-                                <label>Amount (USDC)</label>
-                                <input type="number" id="loanAmount" class="form-control" placeholder="50000">
-                            </div>
-                            <button class="btn btn-danger w-100" onclick="deployCapital()">Deploy Capital</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header">Kernel Configuration</div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label class="mb-2">Whitelist Solver (Kernel)</label>
-                                    <div class="input-group">
-                                        <input type="text" id="solverWhitelistAddr" class="form-control" placeholder="0x...">
-                                        <button class="btn btn-warning" onclick="whitelistSolver()">Add Solver</button>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="mb-2">Set Treasury (Owner Only)</label>
-                                    <div class="input-group">
-                                        <input type="text" id="treasuryAddr" class="form-control" placeholder="0x...">
-                                        <button class="btn btn-secondary" onclick="setTreasury()">Set</button>
-                                    </div>
+            <div class="tab-pane fade" id="admin">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">Vault Access Control</div>
+                            <div class="card-body">
+                                <label class="mb-2">Whitelist Investor Address</label>
+                                <div class="input-group mb-3">
+                                    <input type="text" id="whitelistAddress" class="form-control" placeholder="0x...">
+                                    <button class="btn btn-primary" onclick="whitelistInvestor()">Whitelist</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="tab-pane fade" id="solver">
-            <div class="card">
-                <div class="card-header">Repay Loan</div>
-                <div class="card-body">
-                    <div class="alert alert-info" style="background-color: #0ea5e9; border-color: #0284c7; color: #fff;">Note: You must Approve the Kernel to spend your USDC before repaying.</div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label>Principal Amount</label>
-                            <input type="number" id="repayPrincipal" class="form-control" placeholder="10000">
-                        </div>
-                        <div class="col-md-6">
-                            <label>Profit/Fee Amount</label>
-                            <input type="number" id="repayFee" class="form-control" placeholder="500">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">Kernel Lending (Deploy Capital)</div>
+                            <div class="card-body">
+                                <div class="mb-2">
+                                    <label>Solver Address</label>
+                                    <input type="text" id="loanSolver" class="form-control" placeholder="0x...">
+                                </div>
+                                <div class="mb-3">
+                                    <label>Amount (USDC)</label>
+                                    <input type="number" id="loanAmount" class="form-control" placeholder="50000">
+                                </div>
+                                <button class="btn btn-danger w-100" onclick="deployCapital()">Deploy Capital</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="mt-3">
-                        <button class="btn btn-warning" onclick="approveKernelUSDC()">1. Approve Kernel</button>
-                        <button class="btn btn-success" onclick="repayLoan()">2. Repay Loan</button>
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">Kernel Configuration</div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="mb-2">Whitelist Solver (Kernel)</label>
+                                        <div class="input-group">
+                                            <input type="text" id="solverWhitelistAddr" class="form-control" placeholder="0x...">
+                                            <button class="btn btn-warning" onclick="whitelistSolver()">Add Solver</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="mb-2">Set Treasury (Owner Only)</label>
+                                        <div class="input-group">
+                                            <input type="text" id="treasuryAddr" class="form-control" placeholder="0x...">
+                                            <button class="btn btn-secondary" onclick="setTreasury()">Set</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
+            <div class="tab-pane fade" id="solver">
+                <div class="card">
+                    <div class="card-header">Repay Loan</div>
+                    <div class="card-body">
+                        <div class="alert alert-info" style="background-color: #0ea5e9; border-color: #0284c7; color: #fff;">Note: You must Approve the Kernel to spend your USDC before repaying.</div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Principal Amount</label>
+                                <input type="number" id="repayPrincipal" class="form-control" placeholder="10000">
+                            </div>
+                            <div class="col-md-6">
+                                <label>Profit/Fee Amount</label>
+                                <input type="number" id="repayFee" class="form-control" placeholder="500">
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-warning" onclick="approveKernelUSDC()">1. Approve Kernel</button>
+                            <button class="btn btn-success" onclick="repayLoan()">2. Repay Loan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
 
     <!-- SYSTEM FEATURES GUIDE (Visible inside App) -->
-    <div class="mt-5">
+    <div class="mt-5 animate-up delay-500">
         <h4 class="mb-4 text-white">Dashboard Controls</h4>
         <div class="row g-4">
             <div class="col-md-4">
@@ -407,26 +468,26 @@
           <form id="onboardingForm">
               <div class="mb-3">
                   <label class="form-label">Legal Entity Name / Individual Name</label>
-                  <input type="text" class="form-control" id="entityName" placeholder="e.g. Acme Corp LLC">
+                  <input type="text" class="form-control" id="entityName" name="name" placeholder="e.g. Acme Corp LLC">
               </div>
               <div class="mb-3">
                   <label class="form-label">Contact Email</label>
-                  <input type="email" class="form-control" id="contactEmail" placeholder="compliance@example.com">
+                  <input type="email" class="form-control" id="contactEmail" name="email" placeholder="compliance@example.com">
               </div>
               <div class="mb-3">
                   <label class="form-label">Wallet Address to Whitelist</label>
-                  <input type="text" class="form-control" id="kycWalletAddress" placeholder="0x...">
+                  <input type="text" class="form-control" id="kycWalletAddress" name="wallet" placeholder="0x...">
               </div>
               <div class="mb-3">
                 <label class="form-label">Type of Participant</label>
-                <select class="form-select" id="participantType" style="background-color: #0f172a; color: white; border: 1px solid #334155;">
-                    <option>Investor (Liquidity Provider)</option>
-                    <option>Solver (Borrower)</option>
+                <select class="form-select" id="participantType" name="type" style="background-color: #0f172a; color: white; border: 1px solid #334155;">
+                    <option value="Investor">Investor (Liquidity Provider)</option>
+                    <option value="Solver">Solver (Borrower)</option>
                 </select>
             </div>
               <div class="mb-3 form-check">
                   <input type="checkbox" class="form-check-input" id="termsCheck">
-                  <label class="form-check-label text-muted" for="termsCheck" style="font-size: 0.9em;">I agree to the Terms of Service & Privacy Policy. I understand this information will be used for AML/KYC checks.</label>
+                  <label class="form-check-label text-muted" for="termsCheck" style="font-size: 0.9em;">I agree to the Terms of Service & Privacy Policy.</label>
               </div>
           </form>
         </div>
@@ -446,20 +507,36 @@
     const VAULT_ADDRESS = "0x663D88dA87f6A4E8A9CD6A51C9aA5bC1A49e7d33";
     const KERNEL_ADDRESS = "0x4f707E4cAfCdb4458E7bB200CcBfbb888e64037f";
     // *** FORMSPREE CONFIG ***
-    const FORMSPREE_ENDPOINT = "https://formspree.io/f/xzzlrnwg"; // UPDATED ENDPOINT
+    const FORMSPREE_ENDPOINT = "https://formspree.io/f/xzzlrnwg";
 
     // --- VIEW NAVIGATION ---
     function enterApp() {
-        document.getElementById('landing-view').style.display = 'none';
-        document.getElementById('dashboard-view').style.display = 'block';
+        const landing = document.getElementById('landing-view');
+        const dashboard = document.getElementById('dashboard-view');
+        
+        // Simple Fade Out/In
+        landing.style.opacity = '0';
+        setTimeout(() => {
+            landing.style.display = 'none';
+            dashboard.style.display = 'block';
+            // Trigger Fade In
+            setTimeout(() => { dashboard.style.opacity = '1'; }, 50);
+        }, 500); // Wait for transition
     }
 
     function exitApp() {
-        document.getElementById('landing-view').style.display = 'block';
-        document.getElementById('dashboard-view').style.display = 'none';
+        const landing = document.getElementById('landing-view');
+        const dashboard = document.getElementById('dashboard-view');
+        
+        dashboard.style.opacity = '0';
+        setTimeout(() => {
+            dashboard.style.display = 'none';
+            landing.style.display = 'block';
+            setTimeout(() => { landing.style.opacity = '1'; }, 50);
+        }, 500);
     }
 
-    // --- ONBOARDING LOGIC (Using Formspree AJAX) ---
+    // --- ONBOARDING LOGIC (Formspree AJAX) ---
     function submitOnboarding() {
         // 1. Get Elements
         const modalEl = document.getElementById('onboardingModal');
@@ -478,20 +555,23 @@
         const wallet = document.getElementById('kycWalletAddress').value;
         const type = document.getElementById('participantType').value;
 
-        // 4. Construct Payload (Matches Formspree standard)
-        // We map our custom fields into the 'message' or custom fields if Formspree is configured
+        // 4. Construct Payload (Optimized for Formspree)
         const data = {
-            email: email,
+            name: name,                
+            email: email,              
+            _replyto: email,           
+            _subject: `New Kernel KYC Application: ${name}`,
             message: `
-            APPLICATION DETAILS:
-            --------------------
+            APPLICATION DETAILS
+            -------------------
             Entity Name: ${name}
             Wallet Address: ${wallet}
             Participant Type: ${type}
             Terms Accepted: Yes
             `,
-            // Custom subjects help organize your inbox
-            _subject: `New Kernel KYC Application: ${name}`
+            // Custom Fields
+            participant_type: type,
+            wallet_address: wallet
         };
 
         // 5. Send to Formspree
@@ -513,21 +593,23 @@
             
             if (response.ok) {
                 modal.hide();
-                alert("Thanks for your submission! Our compliance team will review your application.");
+                alert("Success! Your application has been sent to our compliance team.");
                 document.getElementById('onboardingForm').reset();
             } else {
                 response.json().then(data => {
                     if (Object.hasOwn(data, 'errors')) {
-                        alert(data["errors"].map(error => error["message"]).join(", "));
+                        const messages = data["errors"].map(error => error["message"]).join(", ");
+                        alert("Submission Error: " + messages);
                     } else {
-                        alert("Oops! There was a problem submitting your form");
+                        alert("Oops! There was a problem submitting your form (Generic Error).");
                     }
                 })
             }
         }).catch(error => {
+            console.error(error);
             submitBtn.innerText = originalText;
             submitBtn.disabled = false;
-            alert("Oops! There was a problem submitting your form");
+            alert("Network Error: Could not reach Formspree servers. Check your internet connection.");
         });
     }
 
@@ -572,6 +654,7 @@
                 document.getElementById("walletAddress").innerText = userAddress.substring(0,6) + "..." + userAddress.substring(38);
                 document.getElementById("connectBtn").innerText = "Connected";
                 document.getElementById("connectBtn").classList.replace("btn-primary", "btn-success");
+                document.getElementById("connectBtn").classList.remove("pulse-btn"); // Stop pulsing on connect
 
                 // Auto-fill modal address if connected
                 document.getElementById("kycWalletAddress").value = userAddress;
