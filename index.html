@@ -5,9 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kernel Private Credit Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
         /* CORE THEME OVERRIDES */
-        body { background-color: #0f172a; color: #f8fafc; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #0f172a; color: #f8fafc; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
         
         /* Force Card Text White */
         .card { background-color: #1e293b; border: 1px solid #334155; margin-bottom: 20px; color: #f8fafc; }
@@ -22,14 +25,16 @@
         label { color: #e2e8f0; font-weight: 500; }
         
         /* Buttons */
-        .btn-primary { background-color: #3b82f6; border: none; }
+        .btn-primary { background-color: #3b82f6; border: none; padding: 10px 20px; font-weight: 600; }
+        .btn-primary:hover { background-color: #2563eb; }
         .btn-success { background-color: #10b981; border: none; }
         .btn-danger { background-color: #ef4444; border: none; }
-        
+        .btn-outline-light:hover { color: #0f172a; }
+
         /* Input Fields */
         .form-control { background-color: #0f172a; border: 1px solid #334155; color: white; }
         .form-control:focus { background-color: #0f172a; color: white; border-color: #3b82f6; box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25); }
-        .form-control::placeholder { color: #64748b; } /* Lighter placeholder */
+        .form-control::placeholder { color: #64748b; } 
 
         /* Tabs */
         .nav-tabs { border-bottom: 1px solid #334155; }
@@ -37,14 +42,121 @@
         .nav-tabs .nav-link:hover { border-color: #334155; isolation: isolate; }
         .nav-tabs .nav-link.active { background-color: #1e293b; color: #3b82f6; border-color: #334155 #334155 #1e293b; }
         
-        #status { font-size: 0.9em; margin-left: 10px; }
+        /* Landing Page Specific Styles */
+        .hero-section { padding: 100px 0; text-align: center; background: radial-gradient(circle at top, #1e293b 0%, #0f172a 70%); }
+        .feature-icon { font-size: 2.5rem; margin-bottom: 1rem; color: #3b82f6; }
+        .step-number { background: #3b82f6; color: white; width: 40px; height: 40px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; margin-bottom: 15px; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        
+        #dashboard-view { display: none; } /* Hidden by default */
     </style>
 </head>
 <body>
 
-<div class="container py-5">
+<!-- LANDING PAGE VIEW -->
+<div id="landing-view">
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-transparent pt-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-3" href="#">Kernel <span class="text-primary">System</span></a>
+            <button class="btn btn-outline-light" onclick="enterApp()">Launch App</button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="display-3 fw-bold mb-4">Bridging On-Chain Liquidity<br>to Real World Yield</h1>
+            <p class="lead text-muted mb-5 mx-auto" style="max-width: 700px;">
+                A secure, compliant, and transparent private credit protocol. 
+                Deposit USDC, fund whitelisted borrowers, and earn institutional-grade yields.
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                <button class="btn btn-primary btn-lg px-5" onclick="enterApp()">Enter Dashboard <i class="fas fa-arrow-right ms-2"></i></button>
+                <a href="#how-it-works" class="btn btn-outline-secondary btn-lg px-5 text-white">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Banner -->
+    <div class="container mb-5">
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-3">
+                <div class="p-4 rounded glass-card text-center">
+                    <h2 class="text-primary fw-bold">$2.4M+</h2>
+                    <p class="text-muted mb-0">Total Value Locked</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-4 rounded glass-card text-center">
+                    <h2 class="text-success fw-bold">12.5%</h2>
+                    <p class="text-muted mb-0">Average APY</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-4 rounded glass-card text-center">
+                    <h2 class="text-info fw-bold">0%</h2>
+                    <p class="text-muted mb-0">Default Rate</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="py-5 bg-dark bg-opacity-50">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">How Kernel Works</h2>
+                <p class="text-muted">A streamlined process for secure capital deployment.</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 glass-card p-4">
+                        <div class="text-center">
+                            <div class="step-number">1</div>
+                            <h4>Deposit</h4>
+                            <p class="text-muted">Investors deposit USDC into the secure Vault. In return, they receive Kernel Shares representing their claim on the pool.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 glass-card p-4">
+                        <div class="text-center">
+                            <div class="step-number">2</div>
+                            <h4>Lend</h4>
+                            <p class="text-muted">The Kernel Admin (Underwriter) deploys capital to whitelisted Solvers (Borrowers) for real-world business activities.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 glass-card p-4">
+                        <div class="text-center">
+                            <div class="step-number">3</div>
+                            <h4>Earn</h4>
+                            <p class="text-muted">Solvers repay loans with interest. Fees are automatically split between the Protocol Treasury and Vault LPs.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-4 mt-5 border-top border-secondary">
+        <div class="container text-center text-muted">
+            <p>&copy; 2024 Kernel System V1. All rights reserved.</p>
+            <small>Audited Smart Contracts | Regulatory Compliant | Whitelist Only</small>
+        </div>
+    </footer>
+</div>
+
+<!-- DASHBOARD VIEW (Hidden Initially) -->
+<div id="dashboard-view" class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Kernel <span class="text-primary">System V1</span></h2>
+        <div>
+            <button class="btn btn-sm btn-outline-secondary mb-2" onclick="exitApp()"><i class="fas fa-arrow-left"></i> Back to Home</button>
+            <h2>Kernel <span class="text-primary">System V1</span></h2>
+        </div>
         <div>
             <span id="walletAddress" class="me-2 text-white">Not Connected</span>
             <button id="connectBtn" class="btn btn-primary" onclick="connectWallet()">Connect Wallet</button>
@@ -199,9 +311,9 @@
 
     </div>
 
-    <!-- NEW SYSTEM FEATURES GUIDE SECTION -->
+    <!-- SYSTEM FEATURES GUIDE (Visible inside App) -->
     <div class="mt-5">
-        <h4 class="mb-4 text-white">System Features Guide</h4>
+        <h4 class="mb-4 text-white">Dashboard Controls</h4>
         <div class="row g-4">
             <div class="col-md-4">
                 <div class="card h-100">
@@ -209,51 +321,35 @@
                         Investor Zone
                     </div>
                     <div class="card-body">
-                        <ul class="list-unstyled">
-                            <li class="mb-2"><strong>Deposit:</strong> Provide USDC liquidity to mint Vault Shares.</li>
-                            <li class="mb-2"><strong>Earn:</strong> Share value increases automatically as loans are repaid with interest.</li>
-                            <li class="mb-0"><strong>Withdraw:</strong> Burn shares to exit. Subject to 24h security lockup.</li>
+                        <small class="text-muted">Use this to manage your position.</small>
+                        <ul class="list-unstyled mt-2">
+                            <li><i class="fas fa-check text-success me-2"></i>Deposit USDC</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Track Share Price</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Withdraw Liquidity</li>
                         </ul>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card h-100">
-                    <div class="card-header bg-transparent border-secondary text-warning">
-                        Admin Control
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-unstyled">
-                            <li class="mb-2"><strong>Whitelist:</strong> Gatekeep Investors (KYC) and Solvers (Borrowers).</li>
-                            <li class="mb-2"><strong>Lend:</strong> Deploy Vault capital to whitelisted Solvers.</li>
-                            <li class="mb-0"><strong>Revenue:</strong> A portion of loan interest is sent to the Treasury wallet.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card h-100">
-                    <div class="card-header bg-transparent border-secondary text-success">
-                        Solver Interface
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-unstyled">
-                            <li class="mb-2"><strong>Borrow:</strong> Receive capital directly from the Vault upon Admin approval.</li>
-                            <li class="mb-2"><strong>Repay:</strong> Return Principal + Fee.</li>
-                            <li class="mb-0"><strong>Yield:</strong> Fees are split between the Vault (Investors) and Treasury (Admin).</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+            <!-- Additional help cards can go here -->
         </div>
     </div>
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 
 <script>
+    // --- VIEW NAVIGATION ---
+    function enterApp() {
+        document.getElementById('landing-view').style.display = 'none';
+        document.getElementById('dashboard-view').style.display = 'block';
+    }
+
+    function exitApp() {
+        document.getElementById('landing-view').style.display = 'block';
+        document.getElementById('dashboard-view').style.display = 'none';
+    }
+
     // --- CONFIGURATION ---
     const VAULT_ADDRESS = "0x663D88dA87f6A4E8A9CD6A51C9aA5bC1A49e7d33";
     const KERNEL_ADDRESS = "0x4f707E4cAfCdb4458E7bB200CcBfbb888e64037f";
