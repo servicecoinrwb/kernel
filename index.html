@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kernel Private Credit Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; }
+        .card { background-color: #1e293b; border: 1px solid #334155; margin-bottom: 20px; }
+        .card-header { background-color: #334155; border-bottom: 1px solid #475569; font-weight: bold; }
+        .btn-primary { background-color: #3b82f6; border: none; }
+        .btn-success { background-color: #10b981; border: none; }
+        .btn-danger { background-color: #ef4444; border: none; }
+        .form-control { background-color: #0f172a; border: 1px solid #334155; color: white; }
+        .form-control:focus { background-color: #0f172a; color: white; border-color: #3b82f6; }
+        .nav-tabs .nav-link { color: #94a3b8; }
+        .nav-tabs .nav-link.active { background-color: #1e293b; color: white; border-color: #334155 #334155 #1e293b; }
+        #status { font-size: 0.9em; margin-left: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Kernel <span class="text-primary">System V1</span></h2>
+        <div>
+            <span id="walletAddress" class="me-2 text-muted">Not Connected</span>
+            <button id="connectBtn" class="btn btn-primary" onclick="connectWallet()">Connect Wallet</button>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card p-3 text-center">
+                <small class="text-muted">Total Managed Assets (USDC)</small>
+                <h3 id="totalAssets">0.00</h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3 text-center">
+                <small class="text-muted">Total Shares Minted</small>
+                <h3 id="totalShares">0.00</h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3 text-center">
+                <small class="text-muted">Your Share Balance</small>
+                <h3 id="userShares">0.00</h3>
+            </div>
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" id="investor-tab" data-bs-toggle="tab" data-bs-target="#investor" type="button">Investor Zone</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin" type="button">Admin Control</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="solver-tab" data-bs-toggle="tab" data-bs-target="#solver" type="button">Solver Interface</button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="myTabContent">
+        
+        <div class="tab-pane fade show active" id="investor">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">Deposit USDC</div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label>Amount (USDC)</label>
+                                <input type="number" id="depositAmount" class="form-control" placeholder="1000">
+                            </div>
+                            <button class="btn btn-warning w-100 mb-2" onclick="approveUSDC()">1. Approve USDC</button>
+                            <button class="btn btn-success w-100" onclick="deposit()">2. Deposit Funds</button>
+                            <small class="text-muted d-block mt-2">*Requires Whitelist</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">Withdraw USDC</div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label>Share Amount to Burn</label>
+                                <input type="number" id="withdrawAmount" class="form-control" placeholder="500">
+                            </div>
+                            <button class="btn btn-danger w-100" onclick="withdraw()">Withdraw Funds</button>
+                            <small class="text-muted d-block mt-2">*Subject to 24h Lockup</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="admin">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">Vault Access Control</div>
+                        <div class="card-body">
+                            <label>Whitelist Investor Address</label>
+                            <div class="input-group mb-3">
+                                <input type="text" id="whitelistAddress" class="form-control" placeholder="0x...">
+                                <button class="btn btn-primary" onclick="whitelistInvestor()">Whitelist</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">Kernel Lending (Deploy Capital)</div>
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <label>Solver Address</label>
+                                <input type="text" id="loanSolver" class="form-control" placeholder="0x...">
+                            </div>
+                            <div class="mb-3">
+                                <label>Amount (USDC)</label>
+                                <input type="number" id="loanAmount" class="form-control" placeholder="50000">
+                            </div>
+                            <button class="btn btn-danger w-100" onclick="deployCapital()">Deploy Capital</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">Kernel Configuration</div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Whitelist Solver (Kernel)</label>
+                                    <div class="input-group">
+                                        <input type="text" id="solverWhitelistAddr" class="form-control" placeholder="0x...">
+                                        <button class="btn btn-warning" onclick="whitelistSolver()">Add Solver</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Set Treasury (Owner Only)</label>
+                                    <div class="input-group">
+                                        <input type="text" id="treasuryAddr" class="form-control" placeholder="0x...">
+                                        <button class="btn btn-secondary" onclick="setTreasury()">Set</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="solver">
+            <div class="card">
+                <div class="card-header">Repay Loan</div>
+                <div class="card-body">
+                    <div class="alert alert-info">Note: You must Approve the Kernel to spend your USDC before repaying.</div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Principal Amount</label>
+                            <input type="number" id="repayPrincipal" class="form-control" placeholder="10000">
+                        </div>
+                        <div class="col-md-6">
+                            <label>Profit/Fee Amount</label>
+                            <input type="number" id="repayFee" class="form-control" placeholder="500">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-warning" onclick="approveKernelUSDC()">1. Approve Kernel</button>
+                        <button class="btn btn-success" onclick="repayLoan()">2. Repay Loan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+
+<script>
+    // --- CONFIGURATION ---
+    const VAULT_ADDRESS = "0x663D88dA87f6A4E8A9CD6A51C9aA5bC1A49e7d33";
+    const KERNEL_ADDRESS = "0x4f707E4cAfCdb4458E7bB200CcBfbb888e64037f";
+    
+    // ABIs (Simplified for Frontend interaction)
+    const ERC20_ABI = [
+        "function approve(address spender, uint256 amount) external returns (bool)",
+        "function decimals() view returns (uint8)",
+        "function balanceOf(address account) view returns (uint256)"
+    ];
+
+    const VAULT_ABI = [
+        "function deposit(uint256 amount, uint256 minShares) external",
+        "function withdraw(uint256 shareAmount, uint256 minAssets) external",
+        "function totalManagedAssets() view returns (uint256)",
+        "function totalShares() view returns (uint256)",
+        "function shares(address) view returns (uint256)",
+        "function usdc() view returns (address)",
+        "function setInvestorStatus(address investor, bool status) external",
+        "function isWhitelisted(address) view returns (bool)"
+    ];
+
+    const KERNEL_ABI = [
+        "function deployCapital(address solver, uint256 amount) external",
+        "function repayLoan(uint256 principal, uint256 fee) external",
+        "function setSolver(address solver, bool status) external",
+        "function setTreasury(address _treasury) external"
+    ];
+
+    // --- STATE ---
+    let provider, signer, vaultContract, kernelContract, usdcContract;
+    let userAddress;
+    let usdcDecimals = 6; // Default to 6 for USDC
+
+    async function connectWallet() {
+        if (window.ethereum) {
+            try {
+                provider = new ethers.BrowserProvider(window.ethereum);
+                await provider.send("eth_requestAccounts", []);
+                signer = await provider.getSigner();
+                userAddress = await signer.getAddress();
+                
+                document.getElementById("walletAddress").innerText = userAddress.substring(0,6) + "..." + userAddress.substring(38);
+                document.getElementById("connectBtn").innerText = "Connected";
+                document.getElementById("connectBtn").classList.replace("btn-primary", "btn-success");
+
+                initContracts();
+            } catch (error) {
+                console.error(error);
+                alert("Connection failed!");
+            }
+        } else {
+            alert("Please install Metamask!");
+        }
+    }
+
+    async function initContracts() {
+        vaultContract = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, signer);
+        kernelContract = new ethers.Contract(KERNEL_ADDRESS, KERNEL_ABI, signer);
+
+        // Fetch USDC Address from Vault
+        try {
+            const usdcAddress = await vaultContract.usdc();
+            usdcContract = new ethers.Contract(usdcAddress, ERC20_ABI, signer);
+            usdcDecimals = await usdcContract.decimals();
+            refreshData();
+        } catch (e) {
+            console.error("Error fetching USDC:", e);
+            alert("Ensure you are on the correct network!");
+        }
+    }
+
+    async function refreshData() {
+        if(!vaultContract) return;
+        
+        try {
+            const totalAssets = await vaultContract.totalManagedAssets();
+            const totShares = await vaultContract.totalShares();
+            const myShares = await vaultContract.shares(userAddress);
+
+            document.getElementById("totalAssets").innerText = ethers.formatUnits(totalAssets, usdcDecimals);
+            document.getElementById("totalShares").innerText = ethers.formatUnits(totShares, usdcDecimals); // Assuming 1:1 ratio logic for display
+            document.getElementById("userShares").innerText = ethers.formatUnits(myShares, usdcDecimals);
+        } catch(e) {
+            console.error("Error fetching data", e);
+        }
+    }
+
+    // --- INVESTOR ACTIONS ---
+
+    async function approveUSDC() {
+        try {
+            const amount = ethers.parseUnits("1000000000", usdcDecimals); // Approve large amount
+            const tx = await usdcContract.approve(VAULT_ADDRESS, amount);
+            await tx.wait();
+            alert("USDC Approved for Vault!");
+        } catch (e) { alert("Approval failed: " + e.message); }
+    }
+
+    async function deposit() {
+        try {
+            const val = document.getElementById("depositAmount").value;
+            const amount = ethers.parseUnits(val, usdcDecimals);
+            // Slippage: Passing 0 for minShares in demo. In prod, calculate e.g. 99% of expected.
+            const tx = await vaultContract.deposit(amount, 0); 
+            await tx.wait();
+            alert("Deposit Successful!");
+            refreshData();
+        } catch (e) { alert("Deposit failed (Are you whitelisted?): " + e.message); }
+    }
+
+    async function withdraw() {
+        try {
+            const val = document.getElementById("withdrawAmount").value;
+            const shares = ethers.parseUnits(val, usdcDecimals);
+            const tx = await vaultContract.withdraw(shares, 0);
+            await tx.wait();
+            alert("Withdrawal Successful!");
+            refreshData();
+        } catch (e) { alert("Withdraw failed (Lockup active?): " + e.message); }
+    }
+
+    // --- ADMIN ACTIONS ---
+
+    async function whitelistInvestor() {
+        try {
+            const addr = document.getElementById("whitelistAddress").value;
+            const tx = await vaultContract.setInvestorStatus(addr, true);
+            await tx.wait();
+            alert("Investor Whitelisted!");
+        } catch (e) { alert("Action failed: " + e.message); }
+    }
+
+    async function deployCapital() {
+        try {
+            const solver = document.getElementById("loanSolver").value;
+            const val = document.getElementById("loanAmount").value;
+            const amount = ethers.parseUnits(val, usdcDecimals);
+            const tx = await kernelContract.deployCapital(solver, amount);
+            await tx.wait();
+            alert("Capital Deployed to Solver!");
+            refreshData();
+        } catch (e) { alert("Deploy failed: " + e.message); }
+    }
+
+    async function whitelistSolver() {
+        try {
+            const addr = document.getElementById("solverWhitelistAddr").value;
+            const tx = await kernelContract.setSolver(addr, true);
+            await tx.wait();
+            alert("Solver Whitelisted in Kernel!");
+        } catch (e) { alert("Action failed: " + e.message); }
+    }
+
+    async function setTreasury() {
+        try {
+            const addr = document.getElementById("treasuryAddr").value;
+            const tx = await kernelContract.setTreasury(addr);
+            await tx.wait();
+            alert("Treasury Updated!");
+        } catch (e) { alert("Action failed: " + e.message); }
+    }
+
+    // --- SOLVER ACTIONS ---
+
+    async function approveKernelUSDC() {
+        try {
+            const amount = ethers.parseUnits("1000000000", usdcDecimals);
+            const tx = await usdcContract.approve(KERNEL_ADDRESS, amount);
+            await tx.wait();
+            alert("USDC Approved for Kernel!");
+        } catch (e) { alert("Approval failed: " + e.message); }
+    }
+
+    async function repayLoan() {
+        try {
+            const pVal = document.getElementById("repayPrincipal").value;
+            const fVal = document.getElementById("repayFee").value;
+            const principal = ethers.parseUnits(pVal, usdcDecimals);
+            const fee = ethers.parseUnits(fVal, usdcDecimals);
+            
+            const tx = await kernelContract.repayLoan(principal, fee);
+            await tx.wait();
+            alert("Loan Repaid!");
+            refreshData();
+        } catch (e) { alert("Repay failed: " + e.message); }
+    }
+
+</script>
+
+</body>
+</html>
