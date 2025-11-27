@@ -142,22 +142,25 @@
         <div class="row g-4 justify-content-center">
             <div class="col-md-3 animate-up delay-300">
                 <div class="p-4 rounded glass-card text-center">
-                    <h2 class="text-primary fw-bold">$2.4M+</h2>
+                    <h2 class="text-primary fw-bold" id="landingTVL">--</h2>
                     <p class="text-muted mb-0">Total Value Locked</p>
                 </div>
             </div>
             <div class="col-md-3 animate-up delay-400">
                 <div class="p-4 rounded glass-card text-center">
-                    <h2 class="text-success fw-bold">12.5%</h2>
-                    <p class="text-muted mb-0">Average APY</p>
+                    <h2 class="text-success fw-bold" id="landingSharePrice">--</h2>
+                    <p class="text-muted mb-0">Share Price (USDC)</p>
                 </div>
             </div>
             <div class="col-md-3 animate-up delay-500">
                 <div class="p-4 rounded glass-card text-center">
-                    <h2 class="text-info fw-bold">0%</h2>
-                    <p class="text-muted mb-0">Default Rate</p>
+                    <h2 class="text-info fw-bold" id="landingTotalShares">--</h2>
+                    <p class="text-muted mb-0">Total Shares Minted</p>
                 </div>
             </div>
+        </div>
+        <div class="text-center mt-2 animate-up delay-500">
+            <small class="text-muted fst-italic">*Connect wallet to view live protocol stats</small>
         </div>
     </div>
 
@@ -263,7 +266,7 @@
     <!-- Footer -->
     <footer class="py-4 mt-5 border-top border-secondary">
         <div class="container text-center text-muted">
-            <p>&copy; 2024 Kernel System V1. All rights reserved.</p>
+            <p>&copy; 2025 Kernel System V1. All rights reserved.</p>
             <small>Audited Smart Contracts | Regulatory Compliant | Whitelist Only</small>
         </div>
     </footer>
@@ -814,9 +817,30 @@
             const totShares = await vaultContract.totalShares();
             const myShares = await vaultContract.shares(userAddress);
 
-            document.getElementById("totalAssets").innerText = ethers.formatUnits(totalAssets, usdcDecimals);
-            document.getElementById("totalShares").innerText = ethers.formatUnits(totShares, usdcDecimals); 
-            document.getElementById("userShares").innerText = ethers.formatUnits(myShares, usdcDecimals);
+            // Format Stats
+            const totalAssetsFmt = ethers.formatUnits(totalAssets, usdcDecimals);
+            const totalSharesFmt = ethers.formatUnits(totShares, usdcDecimals);
+            const mySharesFmt = ethers.formatUnits(myShares, usdcDecimals);
+
+            // Calculate Share Price (Assets / Shares)
+            let sharePrice = "1.000";
+            if (totShares > 0) {
+                // To avoid floating point mess, we can approximate for UI or use strict math
+                // Simple approx for display:
+                const price = Number(totalAssetsFmt) / Number(totalSharesFmt);
+                sharePrice = price.toFixed(4);
+            }
+
+            // --- Update Dashboard ---
+            document.getElementById("totalAssets").innerText = totalAssetsFmt;
+            document.getElementById("totalShares").innerText = totalSharesFmt; 
+            document.getElementById("userShares").innerText = mySharesFmt;
+
+            // --- Update Landing Page (Real Stats) ---
+            document.getElementById("landingTVL").innerText = "$" + Number(totalAssetsFmt).toLocaleString();
+            document.getElementById("landingSharePrice").innerText = "$" + sharePrice;
+            document.getElementById("landingTotalShares").innerText = Number(totalSharesFmt).toLocaleString();
+
         } catch(e) {
             console.error("Error fetching data", e);
         }
