@@ -73,7 +73,7 @@
             </p>
             <div class="d-flex justify-content-center gap-3">
                 <button class="btn btn-primary btn-lg px-5" onclick="enterApp()">Enter Dashboard <i class="fas fa-arrow-right ms-2"></i></button>
-                <a href="#how-it-works" class="btn btn-outline-secondary btn-lg px-5 text-white">Learn More</a>
+                <a href="#get-whitelisted" class="btn btn-outline-secondary btn-lg px-5 text-white">Join Whitelist</a>
             </div>
         </div>
     </section>
@@ -135,6 +135,66 @@
                             <h4>Earn</h4>
                             <p class="text-muted">Solvers repay loans with interest. Fees are automatically split between the Protocol Treasury and Vault LPs.</p>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Get Whitelisted Section -->
+    <section id="get-whitelisted" class="py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h2 class="fw-bold mb-4">How to Get Whitelisted</h2>
+                    <p class="lead text-muted mb-4">
+                        Kernel operates as a compliant, permissioned protocol. Access is restricted to qualified investors and vetted borrowers to ensure regulatory adherence and credit quality.
+                    </p>
+                    <div class="d-flex flex-column gap-4">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                    <i class="fas fa-file-contract"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h5>1. Compliance & KYC</h5>
+                                <p class="text-muted mb-0">Submit required Know-Your-Customer (KYC) or Know-Your-Business (KYB) documentation for verification.</p>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                    <i class="fas fa-handshake"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h5>2. Legal Onboarding</h5>
+                                <p class="text-muted mb-0">Sign off-chain Master Loan Agreements (for Solvers) or Subscription Agreements (for Investors).</p>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                    <i class="fas fa-key"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h5>3. Protocol Activation</h5>
+                                <p class="text-muted mb-0">Once approved, your wallet address is whitelisted by the Admin, granting you access to the dashboard.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <!-- Updated Button to Trigger Modal -->
+                        <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#onboardingModal">Start Onboarding Application</button>
+                    </div>
+                </div>
+                <div class="col-lg-6 mt-5 mt-lg-0 text-center">
+                    <div class="p-5 rounded glass-card border border-primary border-opacity-25">
+                        <i class="fas fa-shield-alt text-primary mb-3" style="font-size: 4rem;"></i>
+                        <h3>Secure & Compliant</h3>
+                        <p class="text-muted">Our whitelist architecture ensures that all participants are known entities, protecting the liquidity pool from illicit funds and bad actors.</p>
                     </div>
                 </div>
             </div>
@@ -335,6 +395,49 @@
     </div>
 </div>
 
+<!-- ONBOARDING MODAL -->
+<div class="modal fade" id="onboardingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background-color: #1e293b; color: #f8fafc; border: 1px solid #334155;">
+        <div class="modal-header" style="border-bottom: 1px solid #334155;">
+          <h5 class="modal-title">KYC/KYB Application</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="onboardingForm">
+              <div class="mb-3">
+                  <label class="form-label">Legal Entity Name / Individual Name</label>
+                  <input type="text" class="form-control" id="entityName" placeholder="e.g. Acme Corp LLC">
+              </div>
+              <div class="mb-3">
+                  <label class="form-label">Contact Email</label>
+                  <input type="email" class="form-control" id="contactEmail" placeholder="compliance@example.com">
+              </div>
+              <div class="mb-3">
+                  <label class="form-label">Wallet Address to Whitelist</label>
+                  <input type="text" class="form-control" id="kycWalletAddress" placeholder="0x...">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Type of Participant</label>
+                <select class="form-select" id="participantType" style="background-color: #0f172a; color: white; border: 1px solid #334155;">
+                    <option>Investor (Liquidity Provider)</option>
+                    <option>Solver (Borrower)</option>
+                </select>
+            </div>
+              <div class="mb-3 form-check">
+                  <input type="checkbox" class="form-check-input" id="termsCheck">
+                  <label class="form-check-label text-muted" for="termsCheck" style="font-size: 0.9em;">I agree to the Terms of Service & Privacy Policy. I understand this information will be used for AML/KYC checks.</label>
+              </div>
+          </form>
+        </div>
+        <div class="modal-footer" style="border-top: 1px solid #334155;">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="submitOnboarding()">Submit Application</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 
@@ -348,6 +451,50 @@
     function exitApp() {
         document.getElementById('landing-view').style.display = 'block';
         document.getElementById('dashboard-view').style.display = 'none';
+    }
+
+    // --- ONBOARDING LOGIC ---
+    function submitOnboarding() {
+        // 1. Get Elements
+        const modalEl = document.getElementById('onboardingModal');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        
+        // 2. Validate (Simple check)
+        const terms = document.getElementById('termsCheck').checked;
+        if(!terms) {
+            alert("Please accept the Terms & Conditions.");
+            return;
+        }
+
+        // 3. Get Data
+        const name = document.getElementById('entityName').value;
+        const email = document.getElementById('contactEmail').value;
+        const wallet = document.getElementById('kycWalletAddress').value;
+        const type = document.getElementById('participantType').value;
+
+        // 4. Construct Mailto Link
+        const subject = encodeURIComponent(`New Kernel KYC Application: ${name}`);
+        const body = encodeURIComponent(`
+Application Details:
+--------------------
+Entity Name: ${name}
+Contact Email: ${email}
+Wallet Address: ${wallet}
+Participant Type: ${type}
+
+I agree to the Terms of Service and submit this for AML/KYC review.
+        `);
+        
+        const mailtoLink = `mailto:info@service.money?subject=${subject}&body=${body}`;
+
+        // 5. Close Modal & Open Email
+        modal.hide();
+        window.location.href = mailtoLink;
+        
+        // 6. Confirmation
+        setTimeout(() => {
+            alert("Application Draft Created!\n\nYour email client should have opened with the application details. Please send the email to complete your submission.");
+        }, 500);
     }
 
     // --- CONFIGURATION ---
@@ -395,6 +542,9 @@
                 document.getElementById("walletAddress").innerText = userAddress.substring(0,6) + "..." + userAddress.substring(38);
                 document.getElementById("connectBtn").innerText = "Connected";
                 document.getElementById("connectBtn").classList.replace("btn-primary", "btn-success");
+
+                // Auto-fill modal address if connected
+                document.getElementById("kycWalletAddress").value = userAddress;
 
                 initContracts();
             } catch (error) {
