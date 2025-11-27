@@ -442,6 +442,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 
 <script>
+    // --- CONFIGURATION ---
+    const VAULT_ADDRESS = "0x663D88dA87f6A4E8A9CD6A51C9aA5bC1A49e7d33";
+    const KERNEL_ADDRESS = "0x4f707E4cAfCdb4458E7bB200CcBfbb888e64037f";
+    // *** FORMSPREE CONFIG ***
+    const FORMSPREE_ENDPOINT = "https://formspree.io/f/xzzlrnwg"; // UPDATED ENDPOINT
+
     // --- VIEW NAVIGATION ---
     function enterApp() {
         document.getElementById('landing-view').style.display = 'none';
@@ -453,54 +459,78 @@
         document.getElementById('dashboard-view').style.display = 'none';
     }
 
-    // --- ONBOARDING LOGIC ---
+    // --- ONBOARDING LOGIC (Using Formspree AJAX) ---
     function submitOnboarding() {
         // 1. Get Elements
         const modalEl = document.getElementById('onboardingModal');
         const modal = bootstrap.Modal.getInstance(modalEl);
         
-        // 2. Validate (Simple check)
+        // 2. Validate Terms
         const terms = document.getElementById('termsCheck').checked;
         if(!terms) {
             alert("Please accept the Terms & Conditions.");
             return;
         }
 
-        // 3. Get Data
+        // 3. Gather Data
         const name = document.getElementById('entityName').value;
         const email = document.getElementById('contactEmail').value;
         const wallet = document.getElementById('kycWalletAddress').value;
         const type = document.getElementById('participantType').value;
 
-        // 4. Construct Mailto Link
-        const subject = encodeURIComponent(`New Kernel KYC Application: ${name}`);
-        const body = encodeURIComponent(`
-Application Details:
---------------------
-Entity Name: ${name}
-Contact Email: ${email}
-Wallet Address: ${wallet}
-Participant Type: ${type}
+        // 4. Construct Payload (Matches Formspree standard)
+        // We map our custom fields into the 'message' or custom fields if Formspree is configured
+        const data = {
+            email: email,
+            message: `
+            APPLICATION DETAILS:
+            --------------------
+            Entity Name: ${name}
+            Wallet Address: ${wallet}
+            Participant Type: ${type}
+            Terms Accepted: Yes
+            `,
+            // Custom subjects help organize your inbox
+            _subject: `New Kernel KYC Application: ${name}`
+        };
 
-I agree to the Terms of Service and submit this for AML/KYC review.
-        `);
-        
-        const mailtoLink = `mailto:info@service.money?subject=${subject}&body=${body}`;
+        // 5. Send to Formspree
+        const submitBtn = document.querySelector('#onboardingModal .btn-primary');
+        const originalText = submitBtn.innerText;
+        submitBtn.innerText = "Sending...";
+        submitBtn.disabled = true;
 
-        // 5. Close Modal & Open Email
-        modal.hide();
-        window.location.href = mailtoLink;
-        
-        // 6. Confirmation
-        setTimeout(() => {
-            alert("Application Draft Created!\n\nYour email client should have opened with the application details. Please send the email to complete your submission.");
-        }, 500);
+        fetch(FORMSPREE_ENDPOINT, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            submitBtn.innerText = originalText;
+            submitBtn.disabled = false;
+            
+            if (response.ok) {
+                modal.hide();
+                alert("Thanks for your submission! Our compliance team will review your application.");
+                document.getElementById('onboardingForm').reset();
+            } else {
+                response.json().then(data => {
+                    if (Object.hasOwn(data, 'errors')) {
+                        alert(data["errors"].map(error => error["message"]).join(", "));
+                    } else {
+                        alert("Oops! There was a problem submitting your form");
+                    }
+                })
+            }
+        }).catch(error => {
+            submitBtn.innerText = originalText;
+            submitBtn.disabled = false;
+            alert("Oops! There was a problem submitting your form");
+        });
     }
 
-    // --- CONFIGURATION ---
-    const VAULT_ADDRESS = "0x663D88dA87f6A4E8A9CD6A51C9aA5bC1A49e7d33";
-    const KERNEL_ADDRESS = "0x4f707E4cAfCdb4458E7bB200CcBfbb888e64037f";
-    
     // ABIs (Simplified for Frontend interaction)
     const ERC20_ABI = [
         "function approve(address spender, uint256 amount) external returns (bool)",
